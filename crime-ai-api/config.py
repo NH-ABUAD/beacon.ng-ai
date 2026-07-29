@@ -14,6 +14,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+def _normalize_database_url(url: str) -> str:
+    """Render and other hosts often provide postgres:// URLs; SQLAlchemy needs postgresql://."""
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
 class Config:
     """Central configuration object for the Flask application."""
 
@@ -25,10 +32,13 @@ class Config:
     DEBUG: bool = os.getenv("FLASK_DEBUG", "False").lower() == "true"
 
     # --- Database ---
-    SQLALCHEMY_DATABASE_URI: str = os.getenv(
-        "DATABASE_URL", "sqlite:///crime_hotspots.db"
+    SQLALCHEMY_DATABASE_URI: str = _normalize_database_url(
+        os.getenv("DATABASE_URL", "sqlite:///crime_hotspots.db")
     )
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
+
+    # --- CORS (comma-separated origins, or "*" for all) ---
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "*")
 
     # --- Clustering (DBSCAN) ---
     # eps is a neighborhood radius in meters. Distinct per state because

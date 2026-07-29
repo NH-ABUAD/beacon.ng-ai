@@ -7,6 +7,7 @@ CLI command — all additive, existing routes untouched.
 
 from flask import Flask
 from flask_cors import CORS
+from sqlalchemy import text
 
 from config import Config
 from models import db
@@ -25,7 +26,10 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    CORS(app)
+    if Config.CORS_ORIGINS.strip() == "*":
+        CORS(app)
+    else:
+        CORS(app, origins=[origin.strip() for origin in Config.CORS_ORIGINS.split(",") if origin.strip()])
     db.init_app(app)
 
     app.register_blueprint(classify_bp, url_prefix="/api")
@@ -45,8 +49,16 @@ def create_app() -> Flask:
 
     @app.route("/health", methods=["GET"])
     def health_check():
-        """Simple health check endpoint to verify the API is running."""
-        return {"success": True, "message": "Crime AI API is running"}, 200
+        """Health check for Render and upstream services."""
+        try:
+            db.session.execute(text("SELECT 1"))
+            return {"success": True, "message": "Crime AI API is running"}, 200
+        except Exception as exc:
+            return {
+                "success": False,
+                "message": "Crime AI API is up but the database is unavailable",
+                "error": str(exc),
+            }, 503
 
     return app
 

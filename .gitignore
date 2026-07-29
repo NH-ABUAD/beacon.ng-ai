@@ -1,3 +1,4 @@
+.env
 .venv
 crime-ai-api/instance/
 crime-ai-api/__pycache__
