@@ -9,11 +9,45 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.0"
-      - key: FLASK_DEBUG
-        value: "False"
       - key: GROQ_API_KEY
         sync: false
+      - key: MODEL
+        value: llama-3.3-70b-versatile
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: WHISPER_MODEL
+        value: whisper-large-v3
       - key: DATABASE_URL
         sync: false
+      - key: CLUSTER_EPS_METERS_DEFAULT
+        value: "1200"
+      - key: CLUSTER_EPS_METERS_BY_STATE
+        value: '{"Lagos": 500, "Abuja": 700, "Port Harcourt": 600, "Kano": 800}'
+      - key: CLUSTER_MIN_SAMPLES
+        value: "3"
+      - key: DECAY_HALF_LIFE_DAYS
+        value: "7"
+      - key: MAX_REPORT_AGE_DAYS
+        value: "60"
+      - key: SEVERITY_WEIGHTS
+        value: '{"Critical": 10, "High": 6, "Medium": 3, "Low": 1}'
+      - key: RISK_THRESHOLD_HIGH
+        value: "25"
+      - key: RISK_THRESHOLD_MEDIUM
+        value: "10"
+      - key: SEED_BASELINE_CONFIDENCE
+        value: "0.6"
+      - key: UNVERIFIED_BASELINE_CONFIDENCE
+        value: "0.5"
+      - key: VERIFIED_CONFIDENCE
+        value: "0.9"
+      - key: ENABLE_SCHEDULER
+        value: "False"
+      - key: RECLUSTER_INTERVAL_MINUTES
+        value: "15"
+      - key: ENABLE_RATE_LIMITING
+        value: "False"
+      - key: RATE_LIMIT_REPORT_SUBMISSION
+        value: 10/hour
       - key: CORS_ORIGINS
         sync: false
