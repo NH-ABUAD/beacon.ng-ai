@@ -1,0 +1,108 @@
+"""
+Entry point for the Crime Report Classification + Hotspot Detection
+API. Extends the original classification-only app with database
+initialization, the new report/hotspot blueprints, and a seed-data
+CLI command — all additive, existing routes untouched.
+"""
+
+from flask import Flask
+from flask_cors import CORS
+
+from config import Config
+from models import db
+from routes.classify import classify_bp
+from routes.hotspots import hotspots_bp
+from routes.reports import reports_bp
+
+
+def create_app() -> Flask:
+    """
+    Application factory that creates and configures the Flask app.
+
+    Returns:
+        Flask: A fully configured Flask application instance.
+    """
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    CORS(app)
+    db.init_app(app)
+
+    app.register_blueprint(classify_bp, url_prefix="/api")
+    app.register_blueprint(reports_bp, url_prefix="/api")
+    app.register_blueprint(hotspots_bp, url_prefix="/api")
+
+    if Config.ENABLE_RATE_LIMITING:
+        _init_rate_limiting(app)
+
+    with app.app_context():
+        db.create_all()
+
+    _register_cli_commands(app)
+
+    if Config.ENABLE_SCHEDULER:
+        _start_scheduler(app)
+
+    @app.route("/health", methods=["GET"])
+    def health_check():
+        """Simple health check endpoint to verify the API is running."""
+        return {"success": True, "message": "Crime AI API is running"}, 200
+
+    return app
+
+
+def _init_rate_limiting(app: Flask) -> None:
+    """
+    Attach rate limiting to the report submission endpoint, guarding
+    against mass/bot submissions. Off by default via
+    Config.ENABLE_RATE_LIMITING.
+    """
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
+
+    limiter = Limiter(get_remote_address, app=app, default_limits=[])
+    limiter.limit(Config.RATE_LIMIT_REPORT_SUBMISSION)(
+        app.view_functions["reports.create_report"]
+    )
+
+
+def _register_cli_commands(app: Flask) -> None:
+    """Register Flask CLI commands, e.g. `flask seed-db`."""
+
+    @app.cli.command("seed-db")
+    def seed_db():
+        """Populate the database with realistic Nigerian seed crime reports."""
+        from scripts.seed_data import generate_seed_reports
+        from services.cluster_service import recompute_all_clusters
+
+        count = generate_seed_reports()
+        print(f"Created {count} seed reports.")
+
+        recompute_all_clusters()
+        print("Initial cluster computation complete.")
+
+
+def _start_scheduler(app: Flask) -> None:
+    """
+    Start a background job that periodically recomputes clusters for
+    every state, as a safety net alongside the recompute-on-write
+    behavior in report_service.submit_report(). Off by default via
+    Config.ENABLE_SCHEDULER.
+    """
+    from apscheduler.schedulers.background import BackgroundScheduler
+
+    from services.cluster_service import recompute_all_clusters
+
+    scheduler = BackgroundScheduler()
+
+    def _job():
+        with app.app_context():
+            recompute_all_clusters()
+
+    scheduler.add_job(_job, "interval", minutes=Config.RECLUSTER_INTERVAL_MINUTES)
+    scheduler.start()
+
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(host="0.0.0.0", port=5000, debug=Config.DEBUG)

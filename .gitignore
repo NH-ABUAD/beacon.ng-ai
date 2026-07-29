@@ -1,0 +1,12 @@
+.venv
+crime-ai-api/instance/
+crime-ai-api/__pycache__
+crime-ai-api/utils/__pycache__/
+crime-ai-api/models/__pycache__/
+.idea
+crime-ai-api/services/__pycache__/
+crime-ai-api/.env
+crime-ai-api/routes/__pycache__/
+crime-ai-api/data/__pycache__/
+crime-ai-api/__pycache__/
+crime-ai-api/prompts/__pycache__/

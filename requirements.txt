@@ -1,0 +1,12 @@
+Flask
+Flask-Cors
+groq
+python-dotenv
+groq
+httpx
+Flask-SQLAlchemy
+SQLAlchemy
+scikit-learn
+numpy
+APScheduler
+Flask-Limiter
