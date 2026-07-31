@@ -1,5 +1,6 @@
 Flask
 Flask-Cors
+flasgger
 groq
 python-dotenv
 httpx
