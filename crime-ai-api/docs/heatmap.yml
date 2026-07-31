@@ -1,0 +1,45 @@
+tags:
+  - Hotspots
+
+summary: Get heatmap points
+
+description: >
+  Returns weighted crime report points for rendering a heatmap.
+  The weights are computed using the same scoring model used during
+  hotspot clustering, ensuring visual consistency between both views.
+
+produces:
+  - application/json
+
+parameters:
+  - in: query
+    name: state
+    required: false
+    type: string
+    description: Return only points within the specified state.
+
+responses:
+  200:
+    description: Weighted heatmap points.
+    schema:
+      type: object
+      properties:
+        points:
+          type: array
+          items:
+            type: object
+            properties:
+              latitude:
+                type: number
+                format: float
+                example: 6.5244
+
+              longitude:
+                type: number
+                format: float
+                example: 3.3792
+
+              weight:
+                type: number
+                format: float
+                example: 0.873

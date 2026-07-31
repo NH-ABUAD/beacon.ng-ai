@@ -1,3 +1,4 @@
+# routes/hotspots.py
 """
 Route handlers for hotspot querying: GeoJSON cluster output, cluster
 detail, cluster history, aggregate statistics, and a raw heatmap
@@ -12,10 +13,12 @@ from models.cluster import Cluster, RiskScoreLog
 from models.report import CrimeReport
 from services.risk_service import report_weight
 from utils.response import error_response
+from flasgger import swag_from
 
 hotspots_bp = Blueprint("hotspots", __name__)
 
 
+@swag_from('../docs/list_hotspots.yml')
 @hotspots_bp.route("/hotspots", methods=["GET"])
 def list_hotspots():
     """
@@ -51,7 +54,7 @@ def list_hotspots():
         }
     ), 200
 
-
+@swag_from('../docs/get_hotspot.yml')
 @hotspots_bp.route("/hotspots/<cluster_id>", methods=["GET"])
 def get_hotspot(cluster_id: str):
     """
@@ -67,6 +70,7 @@ def get_hotspot(cluster_id: str):
     return jsonify(cluster.to_geojson_feature()), 200
 
 
+@swag_from('../docs/get_hotspot_history.yml')
 @hotspots_bp.route("/hotspots/<cluster_id>/history", methods=["GET"])
 def get_hotspot_history(cluster_id: str):
     """
@@ -90,6 +94,7 @@ def get_hotspot_history(cluster_id: str):
     return jsonify({"cluster_id": cluster_id, "history": [log.to_dict() for log in logs]}), 200
 
 
+@swag_from('../docs/hotspot_stats.yml')
 @hotspots_bp.route("/hotspots/stats", methods=["GET"])
 def hotspot_stats():
     """
@@ -116,7 +121,7 @@ def hotspot_stats():
         }
     ), 200
 
-
+@swag_from('../docs/heatmap.yml')
 @hotspots_bp.route("/heatmap", methods=["GET"])
 def heatmap():
     """

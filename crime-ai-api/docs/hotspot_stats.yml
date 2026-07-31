@@ -1,0 +1,41 @@
+tags:
+  - Hotspots
+
+summary: Get hotspot statistics
+
+description: >
+  Returns aggregate statistics describing the current hotspot
+  distribution across all states.
+
+produces:
+  - application/json
+
+responses:
+  200:
+    description: Aggregate hotspot statistics.
+    schema:
+      type: object
+      properties:
+        total_clusters:
+          type: integer
+          example: 58
+
+        by_risk_level:
+          type: object
+          properties:
+            low:
+              type: integer
+              example: 21
+
+            medium:
+              type: integer
+              example: 24
+
+            high:
+              type: integer
+              example: 13
+
+        by_state:
+          type: object
+          additionalProperties:
+            type: integer

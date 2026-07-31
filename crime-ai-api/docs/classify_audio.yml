@@ -1,0 +1,84 @@
+tags:
+  - Classification
+
+summary: Classify a spoken crime report
+
+description: >
+  Upload an audio recording describing a crime. The audio is transcribed
+  using Groq Whisper, translated if necessary, and classified by the AI
+  model. The response includes the transcription, translated text,
+  predicted crime type, severity, and recommended dispatch unit.
+
+consumes:
+  - multipart/form-data
+
+produces:
+  - application/json
+
+parameters:
+  - in: formData
+    name: audio
+    type: file
+    required: true
+    description: >
+      Audio recording of a crime report. Supported formats:
+      flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, webm.
+      Maximum file size: 25 MB.
+
+responses:
+  200:
+    description: Crime report successfully transcribed and classified.
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+
+        data:
+          type: object
+          properties:
+            transcription:
+              type: string
+              example: Three armed men robbed a filling station in Ikeja.
+
+            original_text:
+              type: string
+              example: Three armed men robbed a filling station in Ikeja.
+
+            translated_text:
+              type: string
+              example: Three armed men robbed a filling station in Ikeja.
+
+            language:
+              type: string
+              example: English
+
+            crime_type:
+              type: string
+              example: Armed Robbery
+
+            severity:
+              type: string
+              example: High
+
+            recommended_dispatch_unit:
+              type: string
+              example: Police
+
+  400:
+    description: >
+      Bad request. Possible causes include:
+      - Missing audio file
+      - No file selected
+      - Unsupported audio format
+      - Audio file exceeds the maximum allowed size
+
+  422:
+    description: The uploaded audio could not be processed or classified.
+
+  502:
+    description: Failed to communicate with the AI transcription/classification service.
+
+  500:
+    description: Unexpected internal server error.

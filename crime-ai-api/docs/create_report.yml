@@ -1,0 +1,89 @@
+tags:
+  - Crime Reports
+
+summary: Submit a new crime report
+
+description: >
+  Submits a new crime report for processing. The report is translated
+  (if necessary), classified using the AI model, verified, geocoded,
+  stored in the database, and used to update crime hotspot clusters.
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+          description: Description of the reported crime.
+          example: >
+            Three armed men robbed a supermarket near Ojota around 9 PM.
+
+        latitude:
+          type: number
+          format: float
+          description: Latitude of the incident location.
+          example: 6.6018
+
+        longitude:
+          type: number
+          format: float
+          description: Longitude of the incident location.
+          example: 3.3515
+
+        location_text:
+          type: string
+          description: Human-readable location if coordinates are unavailable.
+          example: Ojota Bus Stop, Lagos
+
+        state_hint:
+          type: string
+          description: State name to improve geocoding accuracy.
+          example: Lagos
+
+        source:
+          type: string
+          description: Source of the report.
+          default: user_app
+          example: user_app
+
+responses:
+  201:
+    description: Crime report successfully submitted.
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+
+        data:
+          type: object
+          description: Persisted crime report returned by the API.
+
+  400:
+    description: >
+      Invalid request. Possible causes include:
+      - Invalid JSON
+      - Missing description
+      - Invalid location information
+      - Report submission failed
+
+  422:
+    description: Validation error.
+
+  502:
+    description: AI or external service unavailable.
+
+  500:
+    description: Unexpected internal server error.
