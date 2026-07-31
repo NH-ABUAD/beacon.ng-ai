@@ -1,0 +1,35 @@
+tags:
+  - Hotspots
+
+summary: Get hotspot history
+
+description: >
+  Returns the historical risk score evolution for a hotspot cluster,
+  ordered chronologically.
+
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: cluster_id
+    required: true
+    type: string
+    description: Unique hotspot cluster identifier.
+
+responses:
+  200:
+    description: Historical risk score entries.
+    schema:
+      type: object
+      properties:
+        cluster_id:
+          type: string
+
+        history:
+          type: array
+          items:
+            type: object
+
+  404:
+    description: Cluster not found.

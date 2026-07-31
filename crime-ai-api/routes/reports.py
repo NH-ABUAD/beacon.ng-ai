@@ -1,3 +1,4 @@
+# routes/reports.py
 """
 Route handlers for crime report submission and retrieval — the new
 write path that feeds the hotspot system. Distinct from
@@ -11,10 +12,12 @@ from models import db
 from models.report import CrimeReport
 from services.report_service import ReportSubmissionError, submit_report
 from utils.response import error_response, success_response
+from flasgger import swag_from
 
 reports_bp = Blueprint("reports", __name__)
 
 
+@swag_from('../docs/create_report.yml')
 @reports_bp.route("/reports", methods=["POST"])
 def create_report():
     """
@@ -70,7 +73,7 @@ def create_report():
             f"An unexpected error occurred: {str(unexpected_error)}", 500
         )
 
-
+@swag_from('../docs/get_report.yml')
 @reports_bp.route("/reports/<report_id>", methods=["GET"])
 def get_report(report_id: str):
     """

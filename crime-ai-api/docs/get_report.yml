@@ -1,0 +1,37 @@
+tags:
+  - Crime Reports
+
+summary: Get a crime report
+
+description: >
+  Retrieves a previously submitted crime report using its unique ID.
+
+produces:
+  - application/json
+
+parameters:
+  - in: path
+    name: report_id
+    required: true
+    type: string
+    description: Unique identifier of the crime report.
+
+responses:
+  200:
+    description: Crime report retrieved successfully.
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+
+        data:
+          type: object
+          description: Stored crime report.
+
+  404:
+    description: Report not found.
+
+  500:
+    description: Unexpected internal server error.

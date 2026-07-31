@@ -1,3 +1,4 @@
+# routes/classify.py
 """
 Route handlers for the crime classification endpoints.
 
@@ -7,7 +8,7 @@ and formatting HTTP responses.
 """
 
 from flask import Blueprint, request
-
+from pathlib import Path
 from config import Config
 from services.groq_service import (
     classify_crime_report,
@@ -15,11 +16,13 @@ from services.groq_service import (
     is_allowed_audio_file,
 )
 from utils.response import error_response, success_response
+from flasgger import swag_from
 
 classify_bp = Blueprint("classify", __name__)
-
+DOCS = Path(__file__).resolve().parent.parent / "docs"
 
 @classify_bp.route("/classify", methods=["POST"])
+@swag_from(str(DOCS / 'classify.yml'))
 def classify_report():
     """
     Classify a crime report using the Groq LLM.
@@ -62,6 +65,7 @@ def classify_report():
 
 
 @classify_bp.route("/classify-audio", methods=["POST"])
+@swag_from('../docs/classify_audio.yml',)
 def classify_spoken_report_route():
     """
     Classify a spoken crime report submitted as an audio file.

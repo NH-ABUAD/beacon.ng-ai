@@ -1,0 +1,39 @@
+tags:
+  - Classification
+
+summary: Classify a crime report
+
+description: >
+  Accepts a textual crime report and classifies it.
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+          example: Three armed men robbed a supermarket.
+
+responses:
+  200:
+    description: Successfully classified.
+
+  400:
+    description: Bad request.
+
+  422:
+    description: Validation error.
+
+  502:
+    description: AI service unavailable.

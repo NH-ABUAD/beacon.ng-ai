@@ -1,0 +1,50 @@
+tags:
+  - Hotspots
+
+summary: List hotspot clusters
+
+description: >
+  Returns all active crime hotspot clusters as a GeoJSON FeatureCollection.
+  The results can optionally be filtered by state, LGA, and risk level.
+  The response is compatible with mapping libraries such as Leaflet and Mapbox.
+
+produces:
+  - application/json
+
+parameters:
+  - in: query
+    name: state
+    type: string
+    required: false
+    description: Filter hotspots by state.
+
+  - in: query
+    name: lga
+    type: string
+    required: false
+    description: Filter hotspots by Local Government Area.
+
+  - in: query
+    name: risk_level
+    type: string
+    required: false
+    enum:
+      - low
+      - medium
+      - high
+    description: Filter by hotspot risk level.
+
+responses:
+  200:
+    description: GeoJSON FeatureCollection of hotspot clusters.
+    schema:
+      type: object
+      properties:
+        type:
+          type: string
+          example: FeatureCollection
+
+        features:
+          type: array
+          items:
+            type: object

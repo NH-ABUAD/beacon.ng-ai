@@ -13,7 +13,39 @@ from models import db
 from routes.classify import classify_bp
 from routes.hotspots import hotspots_bp
 from routes.reports import reports_bp
+from flasgger import Swagger
 
+swagger_template = {
+        "swagger": "2.0",
+        "info": {
+            "title": "Crime AI API",
+            "description": (
+                "REST API for AI-powered crime classification, crime report "
+                "submission, and hotspot detection."
+            ),
+            "version": "1.0.0",
+            "contact": {
+                "name": "Crime AI Team"
+            },
+        },
+        "basePath": "/api",
+        "schemes": ["http", "https"],
+    }
+
+swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": "apispec",
+            "route": "/apispec.json",
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/docs/",
+}
 
 def create_app() -> Flask:
     """
@@ -23,7 +55,9 @@ def create_app() -> Flask:
         Flask: A fully configured Flask application instance.
     """
     app = Flask(__name__)
+
     app.config.from_object(Config)
+    Swagger(app, template=swagger_template, )
 
     CORS(app)
     db.init_app(app)
@@ -48,6 +82,12 @@ def create_app() -> Flask:
         """Simple health check endpoint to verify the API is running."""
         return {"success": True, "message": "Crime AI API is running"}, 200
 
+    print("\nRegistered routes:")
+    for rule in app.url_map.iter_rules():
+        print(rule)
+    for rule in app.url_map.iter_rules():
+        print(rule.endpoint)
+    print(app.url_map)
     return app
 
 
